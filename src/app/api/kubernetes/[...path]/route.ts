@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import * as k8s from '@kubernetes/client-node'
+import { NodeMetrics } from '@/app/types/kubernetes'
 
 // Initialize the Kubernetes client
 const kc = new k8s.KubeConfig()
@@ -8,10 +9,11 @@ const k8sApi = kc.makeApiClient(k8s.CoreV1Api)
 const metricsApi = kc.makeApiClient(k8s.CustomObjectsApi)
 
 export async function GET(
-  request: Request,
-  { params }: { params: { path: string[] } }
-) {
+  request: NextRequest,
+  context: { params: Promise<{ path: string[] }> }
+): Promise<NextResponse> {
   try {
+    const params = await context.params;
     const path = params.path[0]
 
     switch (path) {
@@ -31,28 +33,36 @@ export async function GET(
           group: 'metrics.k8s.io',
           version: 'v1beta1',
           plural: 'nodes'
-        })
-        
-        // Type assertion since we know the structure
-        const metrics = response.body as {
-          items: Array<{
-            metadata: { name: string };
-            usage: {
-              cpu: string;
-              memory: string;
-            };
-          }>;
+        }) as NodeMetrics
+
+        // Verify we have items before processing
+        if (!response.items) {
+          throw new Error('No metrics items found')
         }
 
         // Aggregate metrics across all nodes
-        const aggregatedMetrics = metrics.items.reduce(
+        const aggregatedMetrics = response.items.reduce(
           (acc, node) => {
-            acc.cpu.used = (parseInt(acc.cpu.used) + parseInt(node.usage.cpu)).toString();
-            acc.memory.used = (parseInt(acc.memory.used) + parseInt(node.usage.memory)).toString();
-            return acc;
+            // Parse CPU (remove any non-numeric characters except dots)
+            const cpuValue = parseInt(node.usage.cpu.replace(/[^0-9.]/g, '')) || 0
+            const memValue = parseInt(node.usage.memory.replace(/[^0-9.]/g, '')) || 0
+
+            return {
+              cpu: {
+                used: acc.cpu.used + cpuValue,
+                total: acc.cpu.total
+              },
+              memory: {
+                used: acc.memory.used + memValue,
+                total: acc.memory.total
+              }
+            }
           },
-          { cpu: { used: '0', total: '0' }, memory: { used: '0', total: '0' } }
-        );
+          { 
+            cpu: { used: 0, total: 0 }, 
+            memory: { used: 0, total: 0 } 
+          }
+        )
 
         return NextResponse.json(aggregatedMetrics)
       }
@@ -65,6 +75,14 @@ export async function GET(
     }
   } catch (error) {
     console.error('Kubernetes API error:', error)
+    
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+      })
+    }
+    
     return NextResponse.json(
       { error: 'Failed to fetch Kubernetes data' },
       { status: 500 }

@@ -31,6 +31,23 @@ export interface Node {
   status: NodeStatus;
 }
 
+export interface NodeMetrics {
+  apiVersion: string;
+  items: Array<{
+    metadata: {
+      name: string;
+      [key: string]: any; /* eslint-disable-line @typescript-eslint/no-explicit-any */
+    };
+    usage: {
+      cpu: string;
+      memory: string;
+    };
+    timestamp: string;
+    window: string;
+  }>;
+  kind: string;
+}
+
 export interface ContainerState {
   waiting?: {
     reason: string;

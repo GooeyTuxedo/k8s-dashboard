@@ -11,7 +11,7 @@ export const fetchClusterData = createAsyncThunk(
       dispatch(setError(null))
 
       // Fetch data in parallel
-      const [nodes, pods, metrics] = await Promise.all([
+      const [nodes, pods, metrics] = await Promise.all([ /* eslint-disable-line @typescript-eslint/no-unused-vars */
         kubernetesService.getNodes(),
         kubernetesService.getPods(),
         kubernetesService.getClusterMetrics(),

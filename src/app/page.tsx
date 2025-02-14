@@ -1,10 +1,26 @@
 'use client'
 
-import { formatDistanceToNow } from 'date-fns'
 import DashboardLayout from '@/app/components/layout/DashboardLayout'
-import { useAppSelector } from '@/app/lib/redux/store'
+import { useAppDispatch, useAppSelector } from '@/app/lib/redux/store'
+import { formatDistanceToNow } from 'date-fns'
+
+import { useEffect } from 'react'
+import { fetchClusterData } from '@/app/lib/redux/features/clusterThunks'
 
 export default function DashboardPage() {
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    // Fetch initial data
+    dispatch(fetchClusterData())
+
+    // Set up polling every 30 seconds
+    const interval = setInterval(() => {
+      dispatch(fetchClusterData())
+    }, 30000)
+
+    return () => clearInterval(interval)
+  }, [dispatch])
   const { nodes, pods, isLoading, error, clusterHealth } = useAppSelector((state) => state.cluster)
 
   const getHealthStatusColor = (status: typeof clusterHealth.status): string => {

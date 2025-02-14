@@ -35,34 +35,32 @@ export async function GET(
           plural: 'nodes'
         }) as NodeMetrics
 
-        // Verify we have items before processing
-        if (!response.items) {
-          throw new Error('No metrics items found')
-        }
-
-        // Aggregate metrics across all nodes
-        const aggregatedMetrics = response.items.reduce(
+        // Calculate current usage from all nodes
+        const usage = response.items.reduce(
           (acc, node) => {
-            // Parse CPU (remove any non-numeric characters except dots)
-            const cpuValue = parseInt(node.usage.cpu.replace(/[^0-9.]/g, '')) || 0
-            const memValue = parseInt(node.usage.memory.replace(/[^0-9.]/g, '')) || 0
+            // Parse CPU from nanoseconds to cores (1 core = 1000000000 nanoseconds)
+            const cpuValue = parseInt(node.usage.cpu.replace('n', '')) / 1000000000;
+            // Parse memory from Kibibytes to Megabytes
+            const memValue = parseInt(node.usage.memory.replace('Ki', '')) / 1024;
 
             return {
-              cpu: {
-                used: acc.cpu.used + cpuValue,
-                total: acc.cpu.total
-              },
-              memory: {
-                used: acc.memory.used + memValue,
-                total: acc.memory.total
-              }
-            }
+              cpu: acc.cpu + cpuValue,
+              memory: acc.memory + memValue
+            };
           },
-          { 
-            cpu: { used: 0, total: 0 }, 
-            memory: { used: 0, total: 0 } 
+          { cpu: 0, memory: 0 }
+        );
+
+        const aggregatedMetrics = {
+          cpu: {
+            used: usage.cpu,
+            total: Math.max(usage.cpu, 4) // Set a minimum of 4 cores for visualization
+          },
+          memory: {
+            used: usage.memory,
+            total: Math.max(usage.memory, 8192) // Set a minimum of 8GB for visualization
           }
-        )
+        };
 
         return NextResponse.json(aggregatedMetrics)
       }

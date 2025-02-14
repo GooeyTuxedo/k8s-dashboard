@@ -1,14 +1,16 @@
 'use client'
 
+import { useEffect } from 'react'
 import DashboardLayout from '@/app/components/layout/DashboardLayout'
 import { useAppDispatch, useAppSelector } from '@/app/lib/redux/store'
-import { formatDistanceToNow } from 'date-fns'
-
-import { useEffect } from 'react'
 import { fetchClusterData } from '@/app/lib/redux/features/clusterThunks'
+import ClusterMetrics from '@/app/components/ClusterMetrics'
+import { formatDistanceToNow } from 'date-fns'
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch()
+  const { nodes, pods, isLoading, error, clusterHealth } = useAppSelector((state) => state.cluster)
+  const metrics = useAppSelector((state) => state.metrics)
 
   useEffect(() => {
     // Fetch initial data
@@ -21,7 +23,6 @@ export default function DashboardPage() {
 
     return () => clearInterval(interval)
   }, [dispatch])
-  const { nodes, pods, isLoading, error, clusterHealth } = useAppSelector((state) => state.cluster)
 
   const getHealthStatusColor = (status: typeof clusterHealth.status): string => {
     const colors = {
@@ -35,50 +36,60 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Overview Cards */}
-        <div className="rounded-lg bg-white p-6 shadow">
-          <h3 className="text-lg font-medium">Cluster Status</h3>
-          <p className={`mt-2 text-3xl font-bold ${getHealthStatusColor(clusterHealth.status)}`}>
-            {isLoading ? 'Loading...' : clusterHealth.status}
-          </p>
-          {clusterHealth.lastUpdated && (
-            <p className="mt-2 text-sm text-gray-500">
-              Last updated: {formatDistanceToNow(new Date(clusterHealth.lastUpdated))} ago
+      <div className="space-y-6">
+        {/* Status Cards */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h3 className="text-lg font-medium">Cluster Status</h3>
+            <p className={`mt-2 text-3xl font-bold ${getHealthStatusColor(clusterHealth.status)}`}>
+              {isLoading ? 'Loading...' : clusterHealth.status}
             </p>
-          )}
+            {clusterHealth.lastUpdated && (
+              <p className="mt-2 text-sm text-gray-500">
+                Last updated: {formatDistanceToNow(new Date(clusterHealth.lastUpdated))} ago
+              </p>
+            )}
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h3 className="text-lg font-medium">Total Nodes</h3>
+            <p className="mt-2 text-3xl font-bold">
+              {isLoading ? 'Loading...' : nodes.length}
+            </p>
+            <p className="mt-2 text-sm text-gray-500">
+              {nodes.filter(node => 
+                node.status.conditions.some(condition => 
+                  condition.type === 'Ready' && condition.status === 'True'
+                )
+              ).length} Ready
+            </p>
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow">
+            <h3 className="text-lg font-medium">Total Pods</h3>
+            <p className="mt-2 text-3xl font-bold">
+              {isLoading ? 'Loading...' : pods.length}
+            </p>
+            <p className="mt-2 text-sm text-gray-500">
+              {pods.filter(pod => pod.status.phase === 'Running').length} Running
+            </p>
+          </div>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow">
-          <h3 className="text-lg font-medium">Total Nodes</h3>
-          <p className="mt-2 text-3xl font-bold">
-            {isLoading ? 'Loading...' : nodes.length}
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            {nodes.filter(node => 
-              node.status.conditions.some(condition => 
-                condition.type === 'Ready' && condition.status === 'True'
-              )
-            ).length} Ready
-          </p>
-        </div>
+        {/* Metrics Visualization */}
+        {metrics && !isLoading && (
+          <ClusterMetrics
+            cpu={metrics.cpu}
+            memory={metrics.memory}
+          />
+        )}
 
-        <div className="rounded-lg bg-white p-6 shadow">
-          <h3 className="text-lg font-medium">Total Pods</h3>
-          <p className="mt-2 text-3xl font-bold">
-            {isLoading ? 'Loading...' : pods.length}
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            {pods.filter(pod => pod.status.phase === 'Running').length} Running
-          </p>
-        </div>
+        {error && (
+          <div className="mt-6 rounded-lg bg-red-50 p-4 text-red-700">
+            {error}
+          </div>
+        )}
       </div>
-
-      {error && (
-        <div className="mt-6 rounded-lg bg-red-50 p-4 text-red-700">
-          {error}
-        </div>
-      )}
     </DashboardLayout>
   )
 }

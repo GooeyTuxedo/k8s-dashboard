@@ -23,7 +23,9 @@ export async function GET(
       }
 
       case 'pods': {
-        const response = await k8sApi.listPodForAllNamespaces()
+        console.log('Fetching pods from Kubernetes API...');
+        const response = await k8sApi.listPodForAllNamespaces();
+        console.log('Kubernetes API Response:', response.items);
         return NextResponse.json(response.items)
       }
 

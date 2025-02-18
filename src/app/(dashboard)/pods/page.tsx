@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import PodDetailsModal from '@/components/pods/PodDetailsModal'
-import { useAppSelector } from '@/lib/redux/store'
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store'
+import { fetchClusterData } from '@/lib/redux/features/clusterThunks'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import type { Pod } from '@/types/kubernetes'
 
@@ -10,12 +11,25 @@ type SortField = 'name' | 'namespace' | 'status' | 'age' | 'cpu' | 'memory'
 type SortOrder = 'asc' | 'desc'
 
 export default function PodsPage() {
+  const dispatch = useAppDispatch()
   const { pods, isLoading } = useAppSelector((state) => state.cluster)
   const [searchTerm, setSearchTerm] = useState('')
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
   const [selectedPod, setSelectedPod] = useState<Pod | null>(null)
   const [selectedNamespace, setSelectedNamespace] = useState<string>('all')
+
+  useEffect(() => {
+    dispatch(fetchClusterData());
+
+    // Set up polling every 30 seconds
+    const interval = setInterval(() => {
+      dispatch(fetchClusterData());
+    }, 30000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, [dispatch]);
 
   // Get unique namespaces for filter dropdown
   const namespaces = useMemo(() => {

@@ -20,10 +20,6 @@ export const fetchClusterData = createAsyncThunk(
         kubernetesService.getClusterMetrics(),
       ])
 
-      console.log('Pods response:', pods);
-
-      console.log('Metrics response:', metricsResponse) // Debug log
-
       dispatch(setNodes(nodes))
       dispatch(setPods(pods))
       dispatch(setMetrics(metricsResponse))

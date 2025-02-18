@@ -1,4 +1,4 @@
-import type { Node, Pod } from '@/app/types/kubernetes'
+import type { Node, Pod } from '@/types/kubernetes'
 
 class KubernetesService {
   private readonly baseUrl: string

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { Node, Pod } from '@/app/types/kubernetes'
+import type { Node, Pod } from '@/types/kubernetes'
 
 interface ClusterState {
   nodes: Node[];

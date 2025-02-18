@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { kubernetesService } from '@/app/lib/kubernetes/client'
+import { kubernetesService } from '@/lib/kubernetes/client'
 import { setNodes, setPods, setLoading, setError, setClusterHealth } from './clusterSlice'
 import { setMetrics, setMetricsLoading, setMetricsError } from './metricsSlice'
-import type { Node, Pod } from '@/app/types/kubernetes'
+import type { Node, Pod } from '@/types/kubernetes'
 
 export const fetchClusterData = createAsyncThunk(
   'cluster/fetchData',

@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect } from 'react'
-import DashboardLayout from '@/app/components/layout/DashboardLayout'
-import { useAppDispatch, useAppSelector } from '@/app/lib/redux/store'
-import { fetchClusterData } from '@/app/lib/redux/features/clusterThunks'
-import ClusterMetrics from '@/app/components/ClusterMetrics'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store'
+import { fetchClusterData } from '@/lib/redux/features/clusterThunks'
+import ClusterMetrics from '@/components/ClusterMetrics'
 import { formatDistanceToNow } from 'date-fns'
 
 export default function DashboardPage() {

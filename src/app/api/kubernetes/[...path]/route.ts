@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as k8s from '@kubernetes/client-node'
-import { NodeMetrics } from '@/app/types/kubernetes'
+import { NodeMetrics } from '@/types/kubernetes'
 
 // Initialize the Kubernetes client
 const kc = new k8s.KubeConfig()

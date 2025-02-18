@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { kubernetesService } from '@/app/lib/kubernetes/client'
 import { setNodes, setPods, setLoading, setError, setClusterHealth } from './clusterSlice'
+import { setMetrics, setMetricsLoading, setMetricsError } from './metricsSlice'
 import type { Node, Pod } from '@/app/types/kubernetes'
 
 export const fetchClusterData = createAsyncThunk(
@@ -8,17 +9,22 @@ export const fetchClusterData = createAsyncThunk(
   async (_, { dispatch }) => {
     try {
       dispatch(setLoading(true))
+      dispatch(setMetricsLoading(true))
       dispatch(setError(null))
+      dispatch(setMetricsError(null))
 
       // Fetch data in parallel
-      const [nodes, pods, metrics] = await Promise.all([ /* eslint-disable-line @typescript-eslint/no-unused-vars */
+      const [nodes, pods, metricsResponse] = await Promise.all([
         kubernetesService.getNodes(),
         kubernetesService.getPods(),
         kubernetesService.getClusterMetrics(),
       ])
 
+      console.log('Metrics response:', metricsResponse) // Debug log
+
       dispatch(setNodes(nodes))
       dispatch(setPods(pods))
+      dispatch(setMetrics(metricsResponse))
 
       // Determine cluster health
       const health = determineClusterHealth(nodes, pods)
@@ -28,9 +34,12 @@ export const fetchClusterData = createAsyncThunk(
       }))
 
     } catch (error) {
-      dispatch(setError(error instanceof Error ? error.message : 'Failed to fetch cluster data'))
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch cluster data'
+      dispatch(setError(errorMessage))
+      dispatch(setMetricsError(errorMessage))
     } finally {
       dispatch(setLoading(false))
+      dispatch(setMetricsLoading(false))
     }
   }
 )

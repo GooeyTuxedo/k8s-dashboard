@@ -33,8 +33,8 @@ class KubernetesService {
   }
 
   async getClusterMetrics(): Promise<{
-    cpu: { used: string; total: string };
-    memory: { used: string; total: string };
+    cpu: { used: number; total: number };
+    memory: { used: number; total: number };
   }> {
     const response = await this.fetchWithAuth('/metrics')
     return response.json()

@@ -1,8 +1,9 @@
 'use client'
 
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import type { Pod } from '@/types/kubernetes'
+import PodLogs from './PodLogs'
 
 interface PodDetailsModalProps {
   pod: Pod | null
@@ -11,6 +12,8 @@ interface PodDetailsModalProps {
 }
 
 export default function PodDetailsModal({ pod, isOpen, onClose }: PodDetailsModalProps) {
+  const [selectedContainer, setSelectedContainer] = useState<string | null>(null);
+  const [showLogs, setShowLogs] = useState(false);
   if (!pod) return null
 
   const getContainerStatus = (container: string) => {
@@ -108,13 +111,24 @@ export default function PodDetailsModal({ pod, isOpen, onClose }: PodDetailsModa
                           <div key={container.name} className="rounded-lg border border-gray-200 p-4">
                             <div className="flex items-center justify-between">
                               <h5 className="text-sm font-medium">{container.name}</h5>
-                              <span 
-                                className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                                  status?.ready ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                                }`}
-                              >
-                                {status?.ready ? 'Ready' : 'Not Ready'}
-                              </span>
+                              <div className="flex items-center space-x-2">
+                                <span 
+                                  className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                                    status?.ready ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                  }`}
+                                >
+                                  {status?.ready ? 'Ready' : 'Not Ready'}
+                                </span>
+                                <button
+                                  onClick={() => {
+                                    setSelectedContainer(container.name)
+                                    setShowLogs(true)
+                                  }}
+                                  className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100"
+                                >
+                                  View Logs
+                                </button>
+                              </div>
                             </div>
 
                             <dl className="mt-4 grid grid-cols-2 gap-4">
@@ -177,6 +191,17 @@ export default function PodDetailsModal({ pod, isOpen, onClose }: PodDetailsModa
           </div>
         </div>
       </Dialog>
+
+      {/* Logs Modal */}
+      {selectedContainer && (
+        <PodLogs
+          isOpen={showLogs}
+          onClose={() => setShowLogs(false)}
+          podName={pod.metadata.name}
+          namespace={pod.metadata.namespace}
+          containerName={selectedContainer}
+        />
+      )}
     </Transition>
   )
 }

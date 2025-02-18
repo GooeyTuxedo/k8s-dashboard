@@ -28,17 +28,37 @@ export async function GET(
       }
 
       case 'metrics': {
-        // Get metrics from the metrics-server
-        const response = await metricsApi.listClusterCustomObject({
-          group: 'metrics.k8s.io',
-          version: 'v1beta1',
-          plural: 'nodes'
-        }) as NodeMetrics
+        // Get both metrics and nodes in parallel
+        const [metricsResponse, nodesResponse] = await Promise.all([
+          metricsApi.listClusterCustomObject({
+            group: 'metrics.k8s.io',
+            version: 'v1beta1',
+            plural: 'nodes'
+          }) as Promise<NodeMetrics>,
+          k8sApi.listNode()
+        ]);
 
-        // Calculate current usage from all nodes
-        const usage = response.items.reduce(
+        // Calculate total capacity from nodes
+        const totalCapacity = nodesResponse.items.reduce((acc, node) => {
+          if (node.status?.capacity?.cpu && node.status?.capacity?.memory) {
+            // CPU capacity is typically in "cores" units
+            const cpuCapacity = parseInt(node.status.capacity.cpu);
+            // Memory capacity is typically in Ki units
+            const memoryCapacity = parseInt(node.status.capacity.memory.replace('Ki', '')) / 1024; // Convert to Mi
+            
+            return {
+              cpu: acc.cpu + cpuCapacity,
+              memory: acc.memory + memoryCapacity
+            };
+          } else {
+            return acc
+          }
+        }, { cpu: 0, memory: 0 });
+
+        // Calculate current usage from metrics
+        const currentUsage = metricsResponse.items.reduce(
           (acc, node) => {
-            // Parse CPU from nanoseconds to cores (1 core = 1000000000 nanoseconds)
+            // Parse CPU from nanoseconds to cores
             const cpuValue = parseInt(node.usage.cpu.replace('n', '')) / 1000000000;
             // Parse memory from Kibibytes to Megabytes
             const memValue = parseInt(node.usage.memory.replace('Ki', '')) / 1024;
@@ -53,12 +73,12 @@ export async function GET(
 
         const aggregatedMetrics = {
           cpu: {
-            used: usage.cpu,
-            total: Math.max(usage.cpu, 4) // Set a minimum of 4 cores for visualization
+            used: currentUsage.cpu,
+            total: totalCapacity.cpu
           },
           memory: {
-            used: usage.memory,
-            total: Math.max(usage.memory, 8192) // Set a minimum of 8GB for visualization
+            used: currentUsage.memory,
+            total: totalCapacity.memory
           }
         };
 

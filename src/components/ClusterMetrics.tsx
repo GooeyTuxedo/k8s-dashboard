@@ -68,7 +68,7 @@ const ClusterMetrics: React.FC<MetricsProps> = ({ cpu, memory }) => {
               stackOffset="expand"
             >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" unit="%" />
+              <XAxis type="number" unit="%" tickFormatter={(x: number) => x * 100} />
               <YAxis type="category" dataKey="name" />
               <Tooltip
                 formatter={(value: number) => `${value.toFixed(1)}%`}

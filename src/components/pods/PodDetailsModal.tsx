@@ -49,10 +49,10 @@ export default function PodDetailsModal({ pod, isOpen, onClose }: PodDetailsModa
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-dark-bg-secondary border border-dark-border p-6 text-left shadow-xl transition-all">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-dark-text-primary">
                     Pod Details: {pod.metadata.name}
                   </Dialog.Title>
                   <button
@@ -69,53 +69,51 @@ export default function PodDetailsModal({ pod, isOpen, onClose }: PodDetailsModa
 
                 <div className="mt-4 space-y-6">
                   {/* Basic Information */}
-                  <section className="rounded-lg bg-gray-50 p-4">
-                    <h4 className="text-sm font-medium text-gray-500">Basic Information</h4>
+                  <section className="rounded-lg bg-dark-bg-tertiary p-4">
+                    <h4 className="text-sm font-medium text-dark-text-tertiary">Basic Information</h4>
                     <dl className="mt-2 grid grid-cols-2 gap-4">
                       <div>
-                        <dt className="text-sm font-medium text-gray-500">Namespace</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{pod.metadata.namespace}</dd>
+                        <dt className="text-sm font-medium text-dark-text-tertiary">Namespace</dt>
+                        <dd className="mt-1 text-sm text-dark-text-secondary">{pod.metadata.namespace}</dd>
                       </div>
                       <div>
-                        <dt className="text-sm font-medium text-gray-500">Node</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{pod.spec.nodeName}</dd>
+                        <dt className="text-sm font-medium text-dark-text-tertiary">Node</dt>
+                        <dd className="mt-1 text-sm text-dark-text-secondary">{pod.spec.nodeName}</dd>
                       </div>
                       <div>
-                        <dt className="text-sm font-medium text-gray-500">Pod IP</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{pod.status.podIP}</dd>
+                        <dt className="text-sm font-medium text-dark-text-tertiary">Pod IP</dt>
+                        <dd className="mt-1 text-sm text-dark-text-secondary">{pod.status.podIP}</dd>
                       </div>
                       <div>
-                        <dt className="text-sm font-medium text-gray-500">Host IP</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{pod.status.hostIP}</dd>
+                        <dt className="text-sm font-medium text-dark-text-tertiary">Host IP</dt>
+                        <dd className="mt-1 text-sm text-dark-text-secondary">{pod.status.hostIP}</dd>
                       </div>
                       <div>
-                        <dt className="text-sm font-medium text-gray-500">Created</dt>
-                        <dd className="mt-1 text-sm text-gray-900">
+                        <dt className="text-sm font-medium text-dark-text-tertiary">Created</dt>
+                        <dd className="mt-1 text-sm text-dark-text-secondary">
                           {new Date(pod.metadata.creationTimestamp).toLocaleString()}
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-sm font-medium text-gray-500">Status</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{pod.status.phase}</dd>
+                        <dt className="text-sm font-medium text-dark-text-tertiary">Status</dt>
+                        <dd className="mt-1 text-sm text-dark-text-secondary">{pod.status.phase}</dd>
                       </div>
                     </dl>
                   </section>
 
                   {/* Containers */}
                   <section>
-                    <h4 className="mb-4 text-sm font-medium text-gray-500">Containers</h4>
+                    <h4 className="mb-4 text-sm font-medium text-dark-text-tertiary">Containers</h4>
                     <div className="space-y-4">
                       {pod.spec.containers.map(container => {
                         const status = getContainerStatus(container.name)
                         return (
-                          <div key={container.name} className="rounded-lg border border-gray-200 p-4">
+                          <div key={container.name} className="rounded-lg border border-dark-border bg-dark-bg-tertiary p-4">
                             <div className="flex items-center justify-between">
-                              <h5 className="text-sm font-medium">{container.name}</h5>
+                              <h5 className="text-sm font-medium text-dark-text-secondary">{container.name}</h5>
                               <div className="flex items-center space-x-2">
                                 <span 
-                                  className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                                    status?.ready ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                                  }`}
+                                  className={status?.ready ? 'badge-success' : 'badge-warning'}
                                 >
                                   {status?.ready ? 'Ready' : 'Not Ready'}
                                 </span>
@@ -124,7 +122,7 @@ export default function PodDetailsModal({ pod, isOpen, onClose }: PodDetailsModa
                                     setSelectedContainer(container.name)
                                     setShowLogs(true)
                                   }}
-                                  className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100"
+                                  className="rounded-md bg-dark-accent-blue bg-opacity-20 px-2 py-1 text-xs font-medium text-dark-accent-blue hover:bg-opacity-30"
                                 >
                                   View Logs
                                 </button>
@@ -133,30 +131,30 @@ export default function PodDetailsModal({ pod, isOpen, onClose }: PodDetailsModa
 
                             <dl className="mt-4 grid grid-cols-2 gap-4">
                               <div>
-                                <dt className="text-sm font-medium text-gray-500">Image</dt>
-                                <dd className="mt-1 text-sm text-gray-900">{container.image}</dd>
+                                <dt className="text-sm font-medium text-dark-text-tertiary">Image</dt>
+                                <dd className="mt-1 text-sm text-dark-text-secondary">{container.image}</dd>
                               </div>
                               <div>
-                                <dt className="text-sm font-medium text-gray-500">Restarts</dt>
-                                <dd className="mt-1 text-sm text-gray-900">{status?.restartCount || 0}</dd>
+                                <dt className="text-sm font-medium text-dark-text-tertiary">Restarts</dt>
+                                <dd className="mt-1 text-sm text-dark-text-secondary">{status?.restartCount || 0}</dd>
                               </div>
                               <div>
-                                <dt className="text-sm font-medium text-gray-500">State</dt>
-                                <dd className="mt-1 text-sm text-gray-900">
+                                <dt className="text-sm font-medium text-dark-text-tertiary">State</dt>
+                                <dd className="mt-1 text-sm text-dark-text-secondary">
                                   {Object.keys(status?.state || {})[0] || 'Unknown'}
                                 </dd>
                               </div>
                               {container.resources.requests && (
                                 <>
                                   <div>
-                                    <dt className="text-sm font-medium text-gray-500">CPU Request</dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
+                                    <dt className="text-sm font-medium text-dark-text-tertiary">CPU Request</dt>
+                                    <dd className="mt-1 text-sm text-dark-text-secondary">
                                       {container.resources.requests.cpu || 'None'}
                                     </dd>
                                   </div>
                                   <div>
-                                    <dt className="text-sm font-medium text-gray-500">Memory Request</dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
+                                    <dt className="text-sm font-medium text-dark-text-tertiary">Memory Request</dt>
+                                    <dd className="mt-1 text-sm text-dark-text-secondary">
                                       {container.resources.requests.memory || 'None'}
                                     </dd>
                                   </div>

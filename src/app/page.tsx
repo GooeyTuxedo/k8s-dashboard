@@ -26,10 +26,10 @@ export default function DashboardPage() {
 
   const getHealthStatusColor = (status: typeof clusterHealth.status): string => {
     const colors = {
-      Healthy: 'text-green-600',
-      Degraded: 'text-yellow-600',
-      Critical: 'text-red-600',
-      Unknown: 'text-gray-600',
+      Healthy: 'text-green-400',
+      Degraded: 'text-yellow-400',
+      Critical: 'text-red-400',
+      Unknown: 'text-gray-400',
     }
     return colors[status]
   }
@@ -39,24 +39,24 @@ export default function DashboardPage() {
       <div className="space-y-6">
         {/* Status Cards */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-lg font-medium">Cluster Status</h3>
+          <div className="card p-6">
+            <h3 className="text-lg font-medium text-dark-text-secondary">Cluster Status</h3>
             <p className={`mt-2 text-3xl font-bold ${getHealthStatusColor(clusterHealth.status)}`}>
               {isLoading ? 'Loading...' : clusterHealth.status}
             </p>
             {clusterHealth.lastUpdated && (
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-dark-text-muted">
                 Last updated: {formatDistanceToNow(new Date(clusterHealth.lastUpdated))} ago
               </p>
             )}
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-lg font-medium">Total Nodes</h3>
-            <p className="mt-2 text-3xl font-bold">
+          <div className="card p-6">
+            <h3 className="text-lg font-medium text-dark-text-secondary">Total Nodes</h3>
+            <p className="mt-2 text-3xl font-bold text-dark-text-primary">
               {isLoading ? 'Loading...' : nodes.length}
             </p>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-dark-text-muted">
               {nodes.filter(node => 
                 node.status.conditions.some(condition => 
                   condition.type === 'Ready' && condition.status === 'True'
@@ -65,12 +65,12 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-lg font-medium">Total Pods</h3>
-            <p className="mt-2 text-3xl font-bold">
+          <div className="card p-6">
+            <h3 className="text-lg font-medium text-dark-text-secondary">Total Pods</h3>
+            <p className="mt-2 text-3xl font-bold text-dark-text-primary">
               {isLoading ? 'Loading...' : pods.length}
             </p>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-dark-text-muted">
               {pods.filter(pod => pod.status.phase === 'Running').length} Running
             </p>
           </div>

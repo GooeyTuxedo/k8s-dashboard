@@ -3,19 +3,62 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground-rgb: 249, 250, 251;  /* Gray-50 */
+  --background-rgb: 17, 24, 39;     /* Gray-900 */
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* Custom component styling */
+@layer components {
+  .card {
+    @apply bg-dark-bg-secondary rounded-lg shadow;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center py-2 px-4 text-dark-text-secondary hover:bg-dark-bg-tertiary rounded-md transition-colors;
+  }
+  
+  .sidebar-item.active {
+    @apply bg-dark-bg-tertiary text-dark-text-primary;
+  }
+  
+  .btn-primary {
+    @apply bg-dark-accent-blue hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-dark-bg-tertiary hover:bg-gray-600 text-dark-text-secondary px-4 py-2 rounded-md transition-colors;
+  }
+  
+  .table-header {
+    @apply px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-dark-text-tertiary bg-dark-bg-secondary;
+  }
+  
+  .table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-dark-text-secondary;
+  }
+  
+  .input {
+    @apply bg-dark-bg-tertiary border-dark-border rounded-md px-4 py-2 text-dark-text-primary placeholder-dark-text-muted focus:ring-dark-accent-blue focus:border-dark-accent-blue;
+  }
+  
+  .badge-success {
+    @apply bg-green-900 text-green-200 inline-flex rounded-full px-2 py-1 text-xs font-semibold;
+  }
+  
+  .badge-warning {
+    @apply bg-yellow-900 text-yellow-200 inline-flex rounded-full px-2 py-1 text-xs font-semibold;
+  }
+  
+  .badge-error {
+    @apply bg-red-900 text-red-200 inline-flex rounded-full px-2 py-1 text-xs font-semibold;
+  }
+  
+  .badge-info {
+    @apply bg-blue-900 text-blue-200 inline-flex rounded-full px-2 py-1 text-xs font-semibold;
+  }
 }

@@ -91,10 +91,10 @@ export default function PodLogs({ isOpen, onClose, podName, namespace, container
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-dark-bg-secondary shadow-xl transition-all">
                 {/* Header */}
-                <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                <div className="flex items-center justify-between border-b border-dark-border px-6 py-4">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-dark-text-primary">
                     Logs: {podName} / {containerName}
                   </Dialog.Title>
                   <button
@@ -110,16 +110,16 @@ export default function PodLogs({ isOpen, onClose, podName, namespace, container
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center space-x-4 border-b border-gray-200 bg-gray-50 px-6 py-3">
+                <div className="flex items-center space-x-4 border-b border-dark-border bg-dark-bg-tertiary px-6 py-3">
                   <div className="flex items-center space-x-2">
-                    <label htmlFor="tailLines" className="text-sm font-medium text-gray-700">
+                    <label htmlFor="tailLines" className="text-sm font-medium text-dark-text-secondary">
                       Tail lines:
                     </label>
                     <select
                       id="tailLines"
                       value={tailLines}
                       onChange={(e) => setTailLines(Number(e.target.value))}
-                      className="rounded-md border-gray-300 text-sm"
+                      className="rounded-md border border-dark-border bg-dark-bg-secondary text-dark-text-primary text-sm"
                     >
                       <option value="100">100</option>
                       <option value="500">500</option>
@@ -134,16 +134,16 @@ export default function PodLogs({ isOpen, onClose, podName, namespace, container
                       id="autoRefresh"
                       checked={autoRefresh}
                       onChange={(e) => setAutoRefresh(e.target.checked)}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600"
+                      className="h-4 w-4 rounded border-dark-border bg-dark-bg-secondary text-dark-accent-blue"
                     />
-                    <label htmlFor="autoRefresh" className="text-sm font-medium text-gray-700">
+                    <label htmlFor="autoRefresh" className="text-sm font-medium text-dark-text-secondary">
                       Auto-refresh
                     </label>
                   </div>
 
                   <button
                     onClick={fetchLogs}
-                    className="rounded-md bg-white px-3 py-1 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                    className="rounded-md bg-dark-bg-primary px-3 py-1 text-sm font-medium text-dark-text-secondary hover:bg-dark-bg-secondary"
                   >
                     Refresh
                   </button>

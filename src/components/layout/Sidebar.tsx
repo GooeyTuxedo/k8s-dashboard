@@ -5,6 +5,7 @@ export default function Sidebar() {
     { name: 'Overview', href: '/' },
     { name: 'Clusters', href: '/clusters' },
     { name: 'Deployments', href: '/deployments' },
+    { name: 'Pods', href: '/pods' },
     { name: 'Costs', href: '/costs' },
   ]
 

@@ -12,7 +12,9 @@ export async function GET(
 ) {
   try {
     const params = await context.params
-    // const tailLines = parseInt(searchParams.get('tailLines') || '100')
+    const { searchParams } = new URL(request.url)
+    const container = searchParams.get('container')
+    const tailLines = parseInt(searchParams.get('tailLines') || '100')
 
     if (!params.name) {
       return NextResponse.json(
@@ -24,8 +26,12 @@ export async function GET(
     const response = await k8sApi.readNamespacedPodLog({
       name: params.name,
       namespace: params.namespace,
-      pretty: "true"
+      pretty: "true",
+      container: container ? container : undefined,
+      tailLines
     })
+
+    console.log("LOGSSS: ", response)
 
     return new NextResponse(response)
   } catch (error) {

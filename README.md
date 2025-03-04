@@ -2,6 +2,7 @@
 
 A real-time monitoring dashboard for Kubernetes clusters. Built with React, TypeScript, and WebSocket integration for live updates. Features cost optimization insights and deployment tracking.
 
+![Kubernetes Dashboard Screenshot](screenshot.png)
 
 ### Architecture Diagram
 
